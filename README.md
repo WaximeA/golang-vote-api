@@ -4,7 +4,7 @@ A GOLang API that provide routes to vote as a user.
 
 ## API Requirements
 
-[API Requirements](api-rules.md)
+[API Requirements](api-requirements.md)
 
 ## Run app : 
 - build project : `$ go build`
