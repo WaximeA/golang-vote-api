@@ -6,11 +6,11 @@ services:
     restart: always
     ports:
       - 8080:8080
+    volumes:
+      - .:/go/scr/app
   db:
     image: postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: api_vote
-    volumes:
-      - ./initdb.sql:/docker-entrypoint-initdb.d/initdb.sql

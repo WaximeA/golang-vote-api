@@ -1,12 +1,15 @@
 package main
 
 import (
+	"database/sql"
 	"encoding/json"
 	"fmt"
 	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	_ "github.com/lib/pq"
 )
 
 type user struct {
@@ -30,10 +33,27 @@ var users = allUsers{
 }
 
 func main() {
+	connString := "host=db user=postgres password=secret dbname=api_vote sslmode=disable"
+	db, err := sql.Open("postgres", connString)
+	if err != nil {
+		panic(err)
+	}
+	err = db.Ping()
+	if err != nil {
+		panic(err)
+	}
+	InitStore(&dbStore{db: db})
+
+	router := NewRouter()
+	log.Fatal(http.ListenAndServe(":8080", router))
+}
+
+func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/users", createUser).Methods("POST")
-	log.Fatal(http.ListenAndServe(":8001", router))
+	router.HandleFunc("/users", getUsers).Methods("GET")
+	return router
 }
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
@@ -44,9 +64,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	var newUser user
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "The user was created ;)")
-	} else {
-		fmt.Fprintf(w, "Woupsy doopsy")
+		fmt.Fprintf(w, "There is an issue with the user creation")
 	}
 
 	json.Unmarshal(reqBody, &newUser)
@@ -54,4 +72,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	json.NewEncoder(w).Encode(newUser)
+}
+
+func getUsers(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(users)
 }
