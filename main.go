@@ -44,9 +44,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	var newUser user
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "The user was created ;)")
-	} else {
-		fmt.Fprintf(w, "Woupsy doopsy")
+		fmt.Fprintf(w, "There is an issue with the user creation")
 	}
 
 	json.Unmarshal(reqBody, &newUser)
