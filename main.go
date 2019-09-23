@@ -33,6 +33,7 @@ func main() {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/users", createUser).Methods("POST")
+	router.HandleFunc("/users", getUsers).Methods("GET")
 	log.Fatal(http.ListenAndServe(":8001", router))
 }
 
@@ -52,4 +53,8 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 
 	json.NewEncoder(w).Encode(newUser)
+}
+
+func getUsers(w http.ResponseWriter, r *http.Request) {
+	json.NewEncoder(w).Encode(users)
 }
