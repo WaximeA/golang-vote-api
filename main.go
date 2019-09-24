@@ -8,27 +8,34 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	_ "github.com/lib/pq"
 )
 
+// ID (int), UUID (string), AccessLevel (int), FirstName (string), LastName (string), Email (string), Password (string), DateOfBirth (time.Time), CreatedAt (time.Time), UpdatedAt (time.Time), DeletedAt (*time.Time)
 type user struct {
-	ID        int    `json:"id"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Email     string `json:"email"`
-	Votes     int    `json:"user_votes"`
+	UUID        int       `json:"id"`
+	AccessLevel int       `json:"access_level"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+	DateOfBirth time.Time `json:"birth_date"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   time.Time
 }
 
 type allUsers []user
 
 var users = allUsers{
 	{
-		ID:        1,
+		UUID:        1,
 		FirstName: "Waxime",
 		LastName:  "AVELINE",
 		Email:     "aveline.maxime@gmail.com",
-		Votes:     0,
+		Password:  "pass",
 	},
 }
 
@@ -68,6 +75,7 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(reqBody, &newUser)
+	store.CreateUser(newUser)
 	users = append(users, newUser)
 	w.WriteHeader(http.StatusCreated)
 
@@ -75,5 +83,5 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
-	json.NewEncoder(w).Encode(users)
+	store.GetUser()
 }
