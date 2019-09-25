@@ -3,7 +3,7 @@ package main
 import "database/sql"
 
 type Store interface {
-	CreateUser(user user) error
+	CreateUser(user *user) error
 	GetUser() ([]*user, error)
 }
 

@@ -27,11 +27,11 @@ type user struct {
 	DeletedAt   time.Time
 }
 
-type allUsers []user
+type allUsers []*user
 
 var users = allUsers{
 	{
-		UUID:        1,
+		UUID:      1,
 		FirstName: "Waxime",
 		LastName:  "AVELINE",
 		Email:     "aveline.maxime@gmail.com",
@@ -68,7 +68,7 @@ func homeLink(w http.ResponseWriter, r *http.Request) {
 }
 
 func createUser(w http.ResponseWriter, r *http.Request) {
-	var newUser user
+	var newUser *user
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
 		fmt.Fprintf(w, "There is an issue with the user creation")
