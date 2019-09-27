@@ -60,6 +60,7 @@ func NewRouter() *mux.Router {
 	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/users", createUser).Methods("POST")
 	router.HandleFunc("/users", getUsers).Methods("GET")
+	router.HandleFunc("/login", login).Methods("POST")
 	return router
 }
 
