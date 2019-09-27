@@ -2,9 +2,11 @@ package main
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
@@ -56,7 +58,74 @@ func login(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(UnsignedResponse{
 		Message: "bad username : " + loginParams.Username,
 	})
-	//c.JSON(http.StatusBadRequest, UnsignedResponse{
-	//	Message: "bad username",
-	//})
+}
+
+func extractBearerToken(header string) (string, error) {
+	if header == "" {
+		return "", errors.New("bad header value given")
+	}
+
+	jwtToken := strings.Split(header, " ")
+	if len(jwtToken) != 2 {
+		return "", errors.New("incorrectly formatted authorization header")
+	}
+
+	return jwtToken[1], nil
+}
+
+func parseToken(jwtToken string) (*jwt.Token, error) {
+	token, err := jwt.Parse(jwtToken, func(token *jwt.Token) (interface{}, error) {
+		if _, OK := token.Method.(*jwt.SigningMethodHMAC); !OK {
+			return nil, errors.New("bad signed method received")
+		}
+		return []byte("supersaucysecret"), nil
+	})
+
+	if err != nil {
+		return nil, errors.New("bad jwt token")
+	}
+
+	return token, nil
+}
+
+func jwtTokenCheck(w http.ResponseWriter, r *http.Request) bool {
+	if r.RequestURI == "/login" {
+		return true
+	}
+	jwtToken, err := extractBearerToken(r.Header.Get("Authorization"))
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(UnsignedResponse{
+			Message: err.Error(),
+		})
+		return false
+	}
+
+	token, err := parseToken(jwtToken)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(UnsignedResponse{
+			Message: "bad jwt token",
+		})
+		return false
+	}
+
+	_, OK := token.Claims.(jwt.MapClaims)
+	if !OK {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(UnsignedResponse{
+			Message: "unable to parse claims",
+		})
+		return false
+	}
+	return true
+}
+
+func LoginMiddleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		OK := jwtTokenCheck(w, r)
+		if OK {
+			next.ServeHTTP(w, r)
+		}
+	})
 }
