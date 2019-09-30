@@ -1,4 +1,4 @@
-version: '3.1'
+version: "3.1"
 services:
   web:
     build: .
@@ -16,3 +16,5 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: secret
       POSTGRES_DB: api_vote
+    ports:
+      - 5432:5432

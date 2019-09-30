@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
+	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
@@ -62,6 +63,8 @@ func NewRouter() *mux.Router {
 	router.HandleFunc("/users/{id}", getUser).Methods("GET")
 	router.HandleFunc("/users/{id}", updateUser).Methods("PATCH")
 	router.HandleFunc("/users/{id}", deleteUser).Methods("DELETE")
+	router.HandleFunc("/votes", createVote).Methods("POST")
+	router.HandleFunc("/votes", getVotes).Methods("GET")
 	router.Use(LoginMiddleware)
 	return router
 }
