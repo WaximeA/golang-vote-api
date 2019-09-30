@@ -121,6 +121,7 @@ func jwtTokenCheck(w http.ResponseWriter, r *http.Request) bool {
 	return true
 }
 
+// Use login middleware with token checkin
 func LoginMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		OK := jwtTokenCheck(w, r)

@@ -2,8 +2,8 @@ package main
 
 import (
 	"database/sql"
-	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -58,35 +58,18 @@ func main() {
 
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
-	router.HandleFunc("/users", createUser).Methods("POST")
-	router.HandleFunc("/users", getUsers).Methods("GET")
+	router.HandleFunc("/", homeLink)
 	router.HandleFunc("/login", login).Methods("POST")
+	router.HandleFunc("/users", createUser).Methods("POST")
+	router.HandleFunc("/users/{id}", getUser).Methods("GET")
+	router.HandleFunc("/users/{id}", updateUser).Methods("PATCH")
+	router.HandleFunc("/users/{id}", deleteUser).Methods("DELETE")
 	router.HandleFunc("/votes", createVote).Methods("POST")
 	router.HandleFunc("/votes", getVotes).Methods("GET")
-	router.HandleFunc("/", homeLink)
 	router.Use(LoginMiddleware)
 	return router
 }
 
 func homeLink(w http.ResponseWriter, r *http.Request) {
 	fmt.Fprintf(w, "Welcome home!")
-}
-
-func createUser(w http.ResponseWriter, r *http.Request) {
-	var newUser *user
-	reqBody, err := ioutil.ReadAll(r.Body)
-	if err != nil {
-		fmt.Fprintf(w, "There is an issue with the user creation")
-	}
-
-	json.Unmarshal(reqBody, &newUser)
-	store.CreateUser(newUser)
-	users = append(users, newUser)
-	w.WriteHeader(http.StatusCreated)
-
-	json.NewEncoder(w).Encode(newUser)
-}
-
-func getUsers(w http.ResponseWriter, r *http.Request) {
-	store.GetUser()
 }
