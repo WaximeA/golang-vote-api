@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/gorilla/mux"
-	"io/ioutil"
 	"log"
 	"net/http"
 	"time"
