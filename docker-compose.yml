@@ -9,8 +9,6 @@ services:
     volumes:
       - .:/go/scr/app
   db:
-    ports:
-      - 5432:5432
     image: postgres
     environment:
       POSTGRES_USER: postgres
