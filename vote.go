@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
 
@@ -43,5 +45,13 @@ func createVote(w http.ResponseWriter, r *http.Request) {
 }
 
 func getVotes(w http.ResponseWriter, r *http.Request) {
-	store.GetVotes()
+
+	voteID := mux.Vars(r)["uuid"]
+
+	for _, singleVote := range votes {
+		if strconv.Itoa(singleVote.UUID) == voteID {
+			json.NewEncoder(w).Encode(singleVote)
+		}
+	}
+	//store.GetVotes()
 }
