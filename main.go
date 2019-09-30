@@ -63,6 +63,8 @@ func NewRouter() *mux.Router {
 	router.HandleFunc("/users", createUser).Methods("POST")
 	router.HandleFunc("/users", getUsers).Methods("GET")
 	router.HandleFunc("/users/{id}", getUser).Methods("GET")
+	router.HandleFunc("/users/{id}", updateUser).Methods("PATCH")
+	router.HandleFunc("/users/{id}", deleteUser).Methods("DELETE")
 	router.Use(LoginMiddleware)
 	return router
 }
@@ -96,6 +98,47 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	for _, singleUser := range users {
 		if strconv.Itoa(singleUser.UUID) == userID {
 			json.NewEncoder(w).Encode(singleUser)
+		}
+	}
+}
+
+func updateUser(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["id"]
+	var updatedUser user
+
+	reqBody, err := ioutil.ReadAll(r.Body)
+	if err != nil {
+		fmt.Fprintf(w, "Kindly enter data with the user title and description only in order to update")
+	}
+	json.Unmarshal(reqBody, &updatedUser)
+
+	for i, singleUser := range users {
+		if strconv.Itoa(singleUser.UUID) == userID {
+			if updatedUser.FirstName != "" {
+				singleUser.FirstName = updatedUser.FirstName
+			}
+			if updatedUser.LastName != "" {
+				singleUser.LastName = updatedUser.LastName
+			}
+			if updatedUser.Email != "" {
+				singleUser.Email = updatedUser.Email
+			}
+			if updatedUser.Password != "" {
+				singleUser.Password = updatedUser.Password
+			}
+			users = append(users[:i], singleUser)
+			json.NewEncoder(w).Encode(singleUser)
+		}
+	}
+}
+
+func deleteUser(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["id"]
+
+	for i, singleUser := range users {
+		if strconv.Itoa(singleUser.UUID) == userID {
+			users = append(users[:i], users[i+1:]...)
+			fmt.Fprintf(w, "The user with ID %v has been deleted successfully", userID)
 		}
 	}
 }
