@@ -57,10 +57,10 @@ func main() {
 
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
+	router.HandleFunc("/", homeLink)
+	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/users", createUser).Methods("POST")
 	router.HandleFunc("/users", getUsers).Methods("GET")
-	router.HandleFunc("/login", login).Methods("POST")
-	router.HandleFunc("/", homeLink)
 	router.Use(LoginMiddleware)
 	return router
 }
@@ -85,5 +85,5 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
-	store.GetUser()
+	json.NewEncoder(w).Encode(users)
 }
