@@ -12,7 +12,7 @@ type Store interface {
 var store Store
 
 func (store *dbStore) CreateUser(User *user) error {
-	_, err := store.db.Query("INSERT INTO users (Firstname, Lastname, Email) VALUES ($1, $2, $3)", User.FirstName, User.LastName, User.Email)
+	_, err := store.db.Query("INSERT INTO users (firstname, lastname, email) VALUES ($1, $2, $3)", User.FirstName, User.LastName, User.Email)
 	return err
 }
 
@@ -35,7 +35,7 @@ func (store *dbStore) GetUser() ([]*user, error) {
 }
 
 func (store *dbStore) CreateVote(Vote *vote) error {
-	_, err := store.db.Query("INSERT INTO votes (Title, Desc) VALUES ($1, $2) ", Vote.Title, Vote.Desc)
+	_, err := store.db.Query("INSERT INTO votes ( uuid, title, description) VALUES ($1, $2, $3) ", Vote.UUID, Vote.Title, Vote.Desc)
 	return err
 }
 
