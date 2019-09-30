@@ -25,7 +25,7 @@ func (store *dbStore) GetUser() ([]*user, error) {
 	users := []*user{}
 	for rows.Next() {
 		user := &user{}
-		if err := rows.Scan(&user.girstName, &user.LastName, &user.Email); err != nil {
+		if err := rows.Scan(&user.FirstName, &user.LastName, &user.Email); err != nil {
 			return nil, err
 		}
 		users = append(users, user)
