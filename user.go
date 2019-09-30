@@ -10,6 +10,7 @@ import (
 )
 
 func createUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var newUser *user
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -25,10 +26,12 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(users)
 }
 
 func getUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
 
 	for _, singleUser := range users {
@@ -39,6 +42,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func updateUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
 	var updatedUser user
 
@@ -69,6 +73,7 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func deleteUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
 
 	for i, singleUser := range users {
