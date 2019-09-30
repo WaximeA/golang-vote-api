@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"strconv"
 	"time"
 
 	_ "github.com/lib/pq"
@@ -61,6 +62,7 @@ func NewRouter() *mux.Router {
 	router.HandleFunc("/login", login).Methods("POST")
 	router.HandleFunc("/users", createUser).Methods("POST")
 	router.HandleFunc("/users", getUsers).Methods("GET")
+	router.HandleFunc("/users/{id}", getUser).Methods("GET")
 	router.Use(LoginMiddleware)
 	return router
 }
@@ -86,4 +88,14 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 func getUsers(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(users)
+}
+
+func getUser(w http.ResponseWriter, r *http.Request) {
+	userID := mux.Vars(r)["id"]
+
+	for _, singleUser := range users {
+		if strconv.Itoa(singleUser.UUID) == userID {
+			json.NewEncoder(w).Encode(singleUser)
+		}
+	}
 }
