@@ -1,4 +1,4 @@
-package main
+package middleware
 
 import (
 	"encoding/json"
@@ -21,7 +21,8 @@ type SignedResponse struct {
 	Message string `json:"message"`
 }
 
-func login(w http.ResponseWriter, r *http.Request) {
+// Login user and create personal authorization bearer token
+func Login(w http.ResponseWriter, r *http.Request) {
 	type login struct {
 		Username string `json:"username,omitempty"`
 	}
