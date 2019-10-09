@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"encoding/json"
@@ -7,30 +7,60 @@ import (
 	"io/ioutil"
 	"net/http"
 	"strconv"
+	"time"
 )
 
-func createUser(w http.ResponseWriter, r *http.Request) {
+// ID (int), UUID (string), AccessLevel (int), FirstName (string), LastName (string), Email (string), Password (string), DateOfBirth (time.Time), CreatedAt (time.Time), UpdatedAt (time.Time), DeletedAt (*time.Time)
+type User struct {
+	UUID        int       `json:"id"`
+	AccessLevel int       `json:"access_level"`
+	FirstName   string    `json:"first_name"`
+	LastName    string    `json:"last_name"`
+	Email       string    `json:"email"`
+	Password    string    `json:"password"`
+	DateOfBirth time.Time `json:"birth_date"`
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   time.Time
+}
+
+type allUsers []*User
+
+var users = allUsers{
+	{
+		UUID:      1,
+		FirstName: "Waxime",
+		LastName:  "AVELINE",
+		Email:     "aveline.maxime@gmail.com",
+		Password:  "pass",
+	},
+}
+
+// Create user from body parameters
+func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var newUser *user
+	var newUser *User
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
-		fmt.Fprintf(w, "There is an issue with the user creation")
+		fmt.Fprintf(w, "There is an issue with the User creation")
 	}
 
 	json.Unmarshal(reqBody, &newUser)
-	store.CreateUser(newUser)
+	//middleware.CreateUser(newUser)
 	users = append(users, newUser)
 	w.WriteHeader(http.StatusCreated)
 
 	json.NewEncoder(w).Encode(newUser)
 }
 
-func getUsers(w http.ResponseWriter, r *http.Request) {
+// Get all users
+func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(users)
 }
 
-func getUser(w http.ResponseWriter, r *http.Request) {
+// Get specific user
+func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
 
@@ -41,10 +71,11 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func updateUser(w http.ResponseWriter, r *http.Request) {
+// Update specific user
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
-	var updatedUser user
+	var updatedUser User
 
 	reqBody, err := ioutil.ReadAll(r.Body)
 	if err != nil {
@@ -72,7 +103,8 @@ func updateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func deleteUser(w http.ResponseWriter, r *http.Request) {
+// Delete specific user
+func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
 

@@ -3,39 +3,15 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
-	"time"
 
+	"github.com/WaximeA/golang-vote-api/middleware"
+	"github.com/WaximeA/golang-vote-api/models"
+
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 )
-
-// ID (int), UUID (string), AccessLevel (int), FirstName (string), LastName (string), Email (string), Password (string), DateOfBirth (time.Time), CreatedAt (time.Time), UpdatedAt (time.Time), DeletedAt (*time.Time)
-type user struct {
-	UUID        int       `json:"id"`
-	AccessLevel int       `json:"access_level"`
-	FirstName   string    `json:"first_name"`
-	LastName    string    `json:"last_name"`
-	Email       string    `json:"email"`
-	Password    string    `json:"password"`
-	DateOfBirth time.Time `json:"birth_date"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   time.Time
-}
-
-type allUsers []*user
-
-var users = allUsers{
-	{
-		UUID:      1,
-		FirstName: "Waxime",
-		LastName:  "AVELINE",
-		Email:     "aveline.maxime@gmail.com",
-		Password:  "pass",
-	},
-}
 
 func main() {
 	connString := "host=db user=postgres password=secret dbname=api_vote sslmode=disable"
@@ -56,15 +32,15 @@ func main() {
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
-	router.HandleFunc("/login", login).Methods("POST")
-	router.HandleFunc("/users", createUser).Methods("POST")
-	router.HandleFunc("/users", getUsers).Methods("GET")
-	router.HandleFunc("/users/{id}", getUser).Methods("GET")
-	router.HandleFunc("/users/{id}", updateUser).Methods("PATCH")
-	router.HandleFunc("/users/{id}", deleteUser).Methods("DELETE")
-	router.HandleFunc("/votes", createVote).Methods("POST")
-	router.HandleFunc("/votes", getVotes).Methods("GET")
-	router.Use(LoginMiddleware)
+	router.HandleFunc("/login", middleware.Login).Methods("POST")
+	router.HandleFunc("/users", models.CreateUser).Methods("POST")
+	router.HandleFunc("/users", models.GetUsers).Methods("GET")
+	router.HandleFunc("/users/{id}", models.GetUser).Methods("GET")
+	router.HandleFunc("/users/{id}", models.UpdateUser).Methods("PATCH")
+	router.HandleFunc("/users/{id}", models.DeleteUser).Methods("DELETE")
+	router.HandleFunc("/votes", models.CreateVote).Methods("POST")
+	router.HandleFunc("/votes", models.GetVotes).Methods("GET")
+	router.Use(middleware.LoginMiddleware)
 	return router
 }
 

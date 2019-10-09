@@ -1,4 +1,4 @@
-package main
+package models
 
 import (
 	"encoding/json"
@@ -9,13 +9,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-type vote struct {
+type Vote struct {
 	UUID  int    `json:"uuid"`
 	Title string `json:"title"`
 	Desc  string `json:"desc`
 }
 
-type allVotes []*vote
+type allVotes []*Vote
 
 var votes = allVotes{
 	{
@@ -25,9 +25,10 @@ var votes = allVotes{
 	},
 }
 
-func createVote(w http.ResponseWriter, r *http.Request) {
+// Create vote
+func CreateVote(w http.ResponseWriter, r *http.Request) {
 
-	var newVote *vote
+	var newVote *Vote
 	reqBody, err := ioutil.ReadAll(r.Body)
 
 	if err != nil {
@@ -35,13 +36,14 @@ func createVote(w http.ResponseWriter, r *http.Request) {
 	}
 
 	json.Unmarshal(reqBody, &newVote)
-	store.CreateVote(newVote)
+	//main.CreateVote(newVote)
 	votes = append(votes, newVote)
 	w.WriteHeader(http.StatusCreated)
 
 	json.NewEncoder(w).Encode(newVote)
 }
 
-func getVotes(w http.ResponseWriter, r *http.Request) {
-	store.GetVotes()
+// Get all votes
+func GetVotes(w http.ResponseWriter, r *http.Request) {
+	fmt.Println("Get all votes")
 }
