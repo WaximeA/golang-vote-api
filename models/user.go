@@ -3,19 +3,18 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/jinzhu/gorm"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
 
 	"github.com/gorilla/mux"
-	"github.com/jinzhu/gorm"
 )
 
 // User struct : ID (int), UUID (string), AccessLevel (int), FirstName (string), LastName (string), Email (string), Password (string), DateOfBirth (time.Time), CreatedAt (time.Time), UpdatedAt (time.Time), DeletedAt (*time.Time)
 type User struct {
-	gorm.Model
-	UUID        int       `json:"id"`
+	UUID        int       `json:"ID"`
 	AccessLevel int       `json:"access_level"`
 	FirstName   string    `json:"first_name"`
 	LastName    string    `json:"last_name"`
@@ -25,6 +24,7 @@ type User struct {
 	CreatedAt   time.Time `gorm:"-"`
 	UpdatedAt   time.Time `gorm:"-"`
 	DeletedAt   time.Time `gorm:"-"`
+	gorm.Model
 }
 
 type allUsers []*User

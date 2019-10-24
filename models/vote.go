@@ -14,10 +14,10 @@ import (
 )
 
 type Vote struct {
-	gorm.Model
-	UUID  int    `json:"id"`
+	UUID  int    `json:"ID"`
 	Title string `json:"title"`
 	Desc  string `json:"desc"`
+	gorm.Model
 }
 
 type allVotes []*Vote
