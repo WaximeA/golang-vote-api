@@ -56,3 +56,16 @@ Then, **for each route** you need to specify the Authorization bearer into the h
 ```
 
 - Delete user : `DELETE http://127.0.0.1:8080/users/5`
+
+- Create vote : `POST http://127.0.0.1:8080/votes` with body for example 
+```
+{
+	"Id":       	2,
+	"Title": "Second vote",
+	"Desc":	"Second desc"
+}
+```
+
+- Get votes : `GET http://127.0.0.1:8080/votes` 
+
+- Get vote : `GET http://127.0.0.1:8080/votes/1`
