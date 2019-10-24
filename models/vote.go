@@ -3,14 +3,16 @@ package models
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	_ "github.com/lib/pq"
 )
 
 type Vote struct {
-	UUID  int    `json:"uuid"`
+	UUID  int    `json:"id"`
 	Title string `json:"title"`
 	Desc  string `json:"desc`
 }
@@ -27,7 +29,7 @@ var votes = allVotes{
 
 // Create vote
 func CreateVote(w http.ResponseWriter, r *http.Request) {
-
+	w.Header().Set("Content-Type", "application/json")
 	var newVote *Vote
 	reqBody, err := ioutil.ReadAll(r.Body)
 
@@ -45,5 +47,18 @@ func CreateVote(w http.ResponseWriter, r *http.Request) {
 
 // Get all votes
 func GetVotes(w http.ResponseWriter, r *http.Request) {
-	fmt.Println("Get all votes")
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(votes)
+}
+
+// Get specific vote
+func GetVote(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	voteID := mux.Vars(r)["id"]
+
+	for _, singleVote := range votes {
+		if strconv.Itoa(singleVote.UUID) == voteID {
+			json.NewEncoder(w).Encode(singleVote)
+		}
+	}
 }
