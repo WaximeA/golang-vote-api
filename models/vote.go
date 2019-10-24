@@ -14,7 +14,7 @@ import (
 type Vote struct {
 	UUID  int    `json:"id"`
 	Title string `json:"title"`
-	Desc  string `json:"desc`
+	Desc  string `json:"desc"`
 }
 
 type allVotes []*Vote
