@@ -1,28 +1,36 @@
 package main
 
 import (
-	"database/sql"
 	"github.com/WaximeA/golang-vote-api/models"
+	"github.com/jinzhu/gorm"
 )
 
+//Store structure
 type Store interface {
-	StoreUser(user *models.User) error
+	StoreUser(user *models.User) bool
 	GetStoredUser() ([]*models.User, error)
-	StoreVote(vote *models.Vote) error
+	StoreVote(vote *models.Vote) bool
 	GetStoredVote() ([]*models.Vote, error)
 }
 
 var store Store
 
 // Store user into postgres
-func (store *dbStore) StoreUser(User *models.User) error {
-	_, err := store.db.Query("INSERT INTO users (id, access_level, first_name, last_name, email, password, birth_date) VALUES ($1, $2, $3)", User.UUID, User.AccessLevel, User.FirstName, User.LastName, User.Email, User.Password, User.DateOfBirth)
+func (store dbStore) StoreUser(User *models.User) bool {
+
+	err := store.db.NewRecord(User) // => returns `true` as primary key is blank
+
+	store.db.Create(&User)
+
+	err = store.db.NewRecord(User) // => return `false` after `user` created
+
 	return err
 }
 
 // Get stored user
-func (store *dbStore) GetStoredUser() ([]*models.User, error) {
-	rows, err := store.db.Query("SELECT * from users")
+func (store dbStore) GetStoredUser() ([]*models.User, error) {
+
+	rows, err := store.db.Raw("SELECT * from users").Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -40,14 +48,19 @@ func (store *dbStore) GetStoredUser() ([]*models.User, error) {
 }
 
 // Store vote
-func (store *dbStore) StoreVote(Vote *models.Vote) error {
-	_, err := store.db.Query("INSERT INTO votes ( uuid, title, description) VALUES ($1, $2, $3) ", Vote.UUID, Vote.Title, Vote.Desc)
+func (store dbStore) StoreVote(Vote *models.Vote) bool {
+	err := store.db.NewRecord(Vote) // => returns `true` as primary key is blank
+
+	store.db.Create(&Vote)
+
+	err = store.db.NewRecord(Vote) // => return `false` after `Vote` created
+
 	return err
 }
 
 // Get stored vote
-func (store *dbStore) GetStoredVote() ([]*models.Vote, error) {
-	rows, err := store.db.Query("SELECT * from votes")
+func (store dbStore) GetStoredVote() ([]*models.Vote, error) {
+	rows, err := store.db.Raw("SELECT * from votes").Rows()
 	if err != nil {
 		return nil, err
 	}
@@ -66,10 +79,12 @@ func (store *dbStore) GetStoredVote() ([]*models.Vote, error) {
 	return votes, nil
 }
 
+// InitStore set the store
 func InitStore(s Store) {
 	store = s
 }
 
+// dbStore struct
 type dbStore struct {
-	db *sql.DB
+	db *gorm.DB
 }

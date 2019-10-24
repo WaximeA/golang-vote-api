@@ -3,18 +3,21 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 
 	_ "github.com/lib/pq"
 )
 
 type Vote struct {
-	UUID  int    `json:"id"`
+	UUID  int    `json:"ID"`
 	Title string `json:"title"`
 	Desc  string `json:"desc"`
+	gorm.Model
 }
 
 type allVotes []*Vote

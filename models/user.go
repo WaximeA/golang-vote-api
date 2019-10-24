@@ -3,25 +3,28 @@ package models
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/gorilla/mux"
+	"github.com/jinzhu/gorm"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
-// ID (int), UUID (string), AccessLevel (int), FirstName (string), LastName (string), Email (string), Password (string), DateOfBirth (time.Time), CreatedAt (time.Time), UpdatedAt (time.Time), DeletedAt (*time.Time)
+// User struct : ID (int), UUID (string), AccessLevel (int), FirstName (string), LastName (string), Email (string), Password (string), DateOfBirth (time.Time), CreatedAt (time.Time), UpdatedAt (time.Time), DeletedAt (*time.Time)
 type User struct {
-	UUID        int       `json:"id"`
+	UUID        int       `json:"ID"`
 	AccessLevel int       `json:"access_level"`
 	FirstName   string    `json:"first_name"`
 	LastName    string    `json:"last_name"`
 	Email       string    `json:"email"`
 	Password    string    `json:"password"`
 	DateOfBirth time.Time `json:"birth_date"`
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   time.Time
+	CreatedAt   time.Time `gorm:"-"`
+	UpdatedAt   time.Time `gorm:"-"`
+	DeletedAt   time.Time `gorm:"-"`
+	gorm.Model
 }
 
 type allUsers []*User
@@ -36,7 +39,7 @@ var users = allUsers{
 	},
 }
 
-// Create user from body parameters
+// CreateUser from body parameters
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	var newUser *User
@@ -53,13 +56,13 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(newUser)
 }
 
-// Get all users
+// GetUsers get all users
 func GetUsers(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(users)
 }
 
-// Get specific user
+// GetUser allow to get a specific user
 func GetUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
@@ -71,7 +74,7 @@ func GetUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Update specific user
+// UpdateUser allow to update a specific user
 func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
@@ -103,7 +106,7 @@ func UpdateUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-// Delete specific user
+// DeleteUser allow to delete a specific user
 func DeleteUser(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 	userID := mux.Vars(r)["id"]
