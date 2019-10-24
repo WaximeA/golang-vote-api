@@ -40,6 +40,7 @@ func NewRouter() *mux.Router {
 	router.HandleFunc("/users/{id}", models.DeleteUser).Methods("DELETE")
 	router.HandleFunc("/votes", models.CreateVote).Methods("POST")
 	router.HandleFunc("/votes", models.GetVotes).Methods("GET")
+	router.HandleFunc("/votes/{id}", models.GetVote).Methods("GET")
 	router.Use(middleware.LoginMiddleware)
 	return router
 }

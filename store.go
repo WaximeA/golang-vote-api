@@ -6,21 +6,22 @@ import (
 )
 
 type Store interface {
-	CreateUser(user *models.User) error
-	GetUser() ([]*models.User, error)
-	CreateVote(vote *models.Vote) error
-	GetVotes() ([]*models.Vote, error)
+	StoreUser(user *models.User) error
+	GetStoredUser() ([]*models.User, error)
+	StoreVote(vote *models.Vote) error
+	GetStoredVote() ([]*models.Vote, error)
 }
 
 var store Store
 
-// Create user into postgres
-func (store *dbStore) CreateUser(User *models.User) error {
-	_, err := store.db.Query("INSERT INTO users (firstname, lastname, email) VALUES ($1, $2, $3)", User.FirstName, User.LastName, User.Email)
+// Store user into postgres
+func (store *dbStore) StoreUser(User *models.User) error {
+	_, err := store.db.Query("INSERT INTO users (id, access_level, first_name, last_name, email, password, birth_date) VALUES ($1, $2, $3)", User.UUID, User.AccessLevel, User.FirstName, User.LastName, User.Email, User.Password, User.DateOfBirth)
 	return err
 }
 
-func (store *dbStore) GetUser() ([]*models.User, error) {
+// Get stored user
+func (store *dbStore) GetStoredUser() ([]*models.User, error) {
 	rows, err := store.db.Query("SELECT * from users")
 	if err != nil {
 		return nil, err
@@ -38,12 +39,14 @@ func (store *dbStore) GetUser() ([]*models.User, error) {
 	return users, nil
 }
 
-func (store *dbStore) CreateVote(Vote *models.Vote) error {
+// Store vote
+func (store *dbStore) StoreVote(Vote *models.Vote) error {
 	_, err := store.db.Query("INSERT INTO votes ( uuid, title, description) VALUES ($1, $2, $3) ", Vote.UUID, Vote.Title, Vote.Desc)
 	return err
 }
 
-func (store *dbStore) GetVotes() ([]*models.Vote, error) {
+// Get stored vote
+func (store *dbStore) GetStoredVote() ([]*models.Vote, error) {
 	rows, err := store.db.Query("SELECT * from votes")
 	if err != nil {
 		return nil, err
