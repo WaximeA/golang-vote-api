@@ -1,7 +1,6 @@
 package main
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
@@ -10,25 +9,41 @@ import (
 	"github.com/WaximeA/golang-vote-api/models"
 
 	"github.com/gorilla/mux"
+
+	"github.com/jinzhu/gorm"
+	_ "github.com/jinzhu/gorm/dialects/postgres"
 	_ "github.com/lib/pq"
 )
 
 func main() {
-	connString := "host=db user=postgres password=secret dbname=api_vote sslmode=disable"
-	db, err := sql.Open("postgres", connString)
+	connString := "host=127.0.0.1 user=postgres password=secret dbname=api_vote sslmode=disable"
+	db, err := gorm.Open("postgres", connString)
 	if err != nil {
 		panic(err)
 	}
-	err = db.Ping()
+	defer db.Close()
+
+	/*err = db.Ping()
 	if err != nil {
 		panic(err)
+	}*/
+
+	if !db.HasTable(&models.User{}) {
+		db.AutoMigrate(&models.User{})
 	}
-	InitStore(&dbStore{db: db})
+
+	if !db.HasTable(&models.Vote{}) {
+		db.AutoMigrate(&models.Vote{})
+	}
+
+	InitStore(dbStore{db: db})
+	//InitStore(dbStore{db: db})
 
 	router := NewRouter()
-	log.Fatal(http.ListenAndServe(":8080", router))
+	log.Fatal(http.ListenAndServe(":8081", router))
 }
 
+// NewRouter is used to set all routes of the project
 func NewRouter() *mux.Router {
 	router := mux.NewRouter().StrictSlash(true)
 	router.HandleFunc("/", homeLink)
