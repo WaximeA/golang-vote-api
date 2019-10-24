@@ -16,7 +16,7 @@ import (
 )
 
 func main() {
-	connString := "host=127.0.0.1 user=postgres password=secret dbname=api_vote sslmode=disable"
+	connString := "host=golang-vote-api_db_1 user=postgres password=secret dbname=api_vote sslmode=disable"
 	db, err := gorm.Open("postgres", connString)
 	if err != nil {
 		panic(err)
@@ -40,7 +40,7 @@ func main() {
 	//InitStore(dbStore{db: db})
 
 	router := NewRouter()
-	log.Fatal(http.ListenAndServe(":8081", router))
+	log.Fatal(http.ListenAndServe(":8080", router))
 }
 
 // NewRouter is used to set all routes of the project
